@@ -1,8 +1,10 @@
 use crate::argconv::*;
 use crate::cass_error;
+use crate::cluster::build_session_builder;
+use crate::cluster::CassCluster;
 use crate::future::{CassFuture, CassResultValue};
 use crate::statement::CassStatement;
-use scylla::{QueryResult, Session, SessionBuilder};
+use scylla::{QueryResult, Session};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
@@ -16,14 +18,14 @@ pub unsafe extern "C" fn cass_session_new() -> *mut CassSession {
 #[no_mangle]
 pub unsafe extern "C" fn cass_session_connect(
     session_raw: *mut CassSession,
-    session_builder_raw: *const SessionBuilder,
+    cluster_raw: *const CassCluster,
 ) -> *mut CassFuture {
     let session_opt = ptr_to_ref(session_raw);
-    let builder = ptr_to_ref(session_builder_raw);
+    let cluster = ptr_to_ref(cluster_raw);
 
     CassFuture::make_raw(async move {
         // TODO: Proper error handling
-        let session = builder
+        let session = build_session_builder(cluster)
             .build()
             .await
             .map_err(|_| cass_error::LIB_NO_HOSTS_AVAILABLE)?;
