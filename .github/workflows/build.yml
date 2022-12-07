@@ -22,6 +22,8 @@ jobs:
 
     - name: Setup environment
       run: |
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 40976EAF437D05B5
         sudo sh -c "echo 'deb http://security.ubuntu.com/ubuntu xenial-security main' >> /etc/apt/sources.list"
         sudo apt-get update
         sudo apt-get install libssl1.0.0 libuv1-dev libkrb5-dev libc6-dbg
